@@ -1,0 +1,22 @@
+name:           inkscape-util
+version:        0.1
+synopsis:       Programs to manipulate Inkscape SVG files.
+author:         Andrea Falconi
+license:        BSD3
+build-type:     Simple
+cabal-version:  >= 1.8
+
+executable inject-view-box
+  build-depends:  base, base-unicode-symbols, hxt, hxt-expat, heredoc
+  main-is:        Main.hs
+  hs-source-dirs: src/inject-view-box src/shared
+
+executable split-layers
+  build-depends:  base, base-unicode-symbols, filepath, text, hxt, hxt-expat
+  main-is:        Main.hs
+  hs-source-dirs: src/split-layers src/shared
+
+executable presentation
+  build-depends:  base, base-unicode-symbols, text, hxt, hxt-expat, heredoc
+  main-is:        Main.hs
+  hs-source-dirs: src/presentation src/shared

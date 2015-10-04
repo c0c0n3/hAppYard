@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<html><head><title>Untitled Document</title></head><body>
+    <p id="p1">This is a paragraph. It has <i>emphasized</i> and <b>strong</b> words.</p>
+    <img id="i1" src="myimage.png"/>
+</body></html>

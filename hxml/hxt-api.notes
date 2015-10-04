@@ -1,0 +1,214 @@
+Notes taken while reading: 
+
+"A Cookbook for the Haskell XML Toolbox with Examples for Processing RDF Documents"
+
+
+
+2.2. Basic Data Types
+=====================
+
+2.2.1. NTree
+------------
+NTree (in Data.Tree.NTree.TypeDefs)
+Tree class (in Data.Tree.Class)
+
+    NTree a = NTree a ( NTrees a )
+    NTrees a = [ NTree a]
+    
+formatTree
+
+2.2.2. XmlTree
+--------------
+XmlTree = NTree XNode    (in Text.XML.HXT.DOM.TypeDefs)
+XmlTrees = NTrees XNode
+
+Attributes = AssocList String String
+QName = QN { namePrefix :: String, localPart :: String, namespaceUri :: String }
+
+XNode   = XText String
+        | XCharRef Int
+        | XEntityRef String
+        | XCmt String
+        | XCdata String
+        | XPi QName XmlTrees
+        | XTag QName XmlTrees
+        | XDTD DTDElem Attributes
+        | XAttr QName
+        | XError Int String
+        
+2.2.3. Class XmlNode – Basic Interface to NTree and XNode
+---------------------------------------------------------
+XmlNode class (in Text.XML.HXT.Arrow.XmlNode)
+XmlNode = interface to HXT data types (NTree, XmlTree).
+provides functions for processing XNode and NTree; divided in 4 categories:
+    * predicates: test speciﬁc properties of elements, e.g. isText
+    * selectors: access parts of the tree, e.g. getText
+    * modiﬁers: alter nodes and their attributes; two versions: function param or value to set
+    * constructors: create new element nodes, e.g. mkText
+
+Arrow classes leverage XmlNode, adding e.g. I/O, state, etc. 
+
+
+2.3. Arrows in Haskell
+======================
+
+2.3.2. Main Arrow Class
+-----------------------
+class Arrow arr where
+    arr :: (a -> b) -> arr a b
+    (>>>) :: arr a b -> arr b c -> arr a c
+    (&&&) :: arr a b -> arr a c -> arr a (b,c)
+    
+2.3.3. Additional Arrow Classes
+-------------------------------
+ArrowChoice, ArrowZero, ArrowPlus
+
+Arrow arr => ArrowApply arr where
+    app :: arr ( arr a b, a) b        -- exp eval: B^A x A --> B
+
+instance ArrowApply (->) where
+    app (f,x) = f x
+
+
+2.3.4. Arrow Syntax
+-------------------
+proc pat -> a -< expr = arr (\pat -> expr) >>> a
+
+
+2.4. Main Arrow Modules
+=======================
+
+* ArrowList: most important
+* ArrowIf: adds operators for conditional cases to the computation over lists
+* ArrowTree: adds arrows for processing trees implementing Tree
+* ArrowXml: combines all classes and provides all kind of arrows for processing XML
+
+2.4.1. ArrowList – List Processing
+----------------------------------
+generalizes XML filter XmlTree -> [XmlTrees] to computation as relations a -> [b]
+e.g. 
+    LA a b = LA { runLA :: a -> [b] }     (in Control.Arrow.ListArrow)
+
+instance Arrow LA where
+    arr f         = LA (\x -> [f x])
+    LA f >>> LA g = LA (concatMap g . f)
+    first (LA f)  = LA (\(a, t) -> [ (b, t) | b <- f x ])  (i.e. from A -> [B] to A x T -> [B x T])
+
+instance ArrowZero LA where
+    zeroArrow = LA (const [])
+
+instance ArrowApply LA where
+    app = LA (\(LA f, x) -> f x)        --   LA (f:a -> [b]), a  |--> [b]
+    
+(Arrow a, ArrowPlus a, ArrowZero a, ArrowApply a) => ArrowList a
+    arrL  :: (b -> [c]) -> a b c
+    arr2A :: (b -> a c d) -> a (b, c) d
+    isA   :: (b -> Bool) -> a b b
+    (>>.) :: a b c -> ([c] -> [d]) -> a b d
+
+instance ArrowList LA where
+    arrL       = LA
+    arr2A k    = LA (\(x,y) -> runLA (k x) y )     -- k ~: B -> (C -> [D])
+    isA p      = LA (\x -> if p x then [x] else [])
+    LA f >>. g = LA (g . f)
+
+other members of ArrowList
+
+    this :: a b b          none :: a b c            -- aliases for readability
+    this = returnA         none = zeroArrow
+
+    constA :: c -> a b c   -- e.g. runLA ( constA 2 <+> constA 4 >>. reverse ) []   ~~~>   [4 ,2]
+    constA = arr . const
+
+    arr2L :: (b -> c -> [d]) -> a (b, c) d    -- same as arrL but binary
+    arr2L = arrL . uncurry
+
+    arr2 :: (b1 -> b2 -> c) -> a (b1 , b2) c  -- same as arr but binary; also available: arr3, arr4
+                                              -- e.g. combining result of arrow sequencing w/ bin 
+                                              -- function f:  a1 &&& a2 >>> arr2 f
+
+    listA :: a b c -> a b [c]   -- convert nondeterministic into deterministic arrow
+    listA af = af >>. (:[])     -- useful when list of results must be manipulated, e.g.
+                                -- collectAndSort :: ( ArrowList a, Ord c) => a b c -> a b c
+                                -- collectAndSort collect = listA collect >>> arrL sort
+                                
+    catA :: [a b c] -> a b c
+    catA = foldl (<+>) none  
+        -- e.g. runLA (collectAndSort (catA [ constA 3, constA 1, constA 5])) []  ~~~>  [1 ,3 ,5]
+    
+    seqA :: [a b b] -> a b b
+    seqA = foldl (>>>) this
+
+    applyA :: a b (a b c) -> a b c     -- point-free syle simulation of using an arg in 2 places
+    applyA f = (f &&& this) >>> app    -- applyA coresponds to: apply f x = let g = f x in g x
+        -- used to define several other arrows ($<, $<<, etc.) which all deal with the same problem 
+        -- of the point-free programming using values more than once.
+
+2.4.2. ArrowIf – Conditional Arrows
+-----------------------------------
+conditional combinators for list arrows; idea: empty list = false, non-empty = true
+
+ArrowIf
+  ifA :: a b c -> a b d -> a b d -> a b d
+  orElse :: a b c -> a b c -> a b c
+
+instance ArrowIf LA where
+    ifA (LA p) t e = LA (\x -> runLA (if null (p x) then e else t) x) 
+    (LA f) `orElse` (LA g) = LA (\x -> let fx in if null fx then g x else fx)
+    
+other members
+    neg: arrow negation, like not for predicates
+    f `when` g: g holds => apply f; else identity filter
+    g `guards` f: g holds => apply f; else nothing filter
+    containing: if results of first arrow satisfy predicate return them
+    choiceA: case expressions for arrows
+
+2.4.3. ArrowState
+-----------------
+works similarly to state monad by threading a state value through the application of arrows.
+
+2.4.4. ArrowIO
+--------------
+lifting I/O actions to arrows
+several possible implementations:
+ * IOLA (in IOListArrow) combines computations over lists with I/O
+
+        IOLA a b = IOLA { runIOLA :: a -> IO [b] }
+        instance ArrowIO IOLA where
+            arrIO cmd = IOLA (\x -> do
+                                    res <- cmd x
+                                    return [ res ])
+
+ * IOSLA also provides state handling
+ * etc.
+
+2.4.5. ArrowTree – Tree Processing
+----------------------------------
+processing of trees which implement Data.Class.Tree interface
+ 
+ * members have default implementations which use list arrows for processing
+ 
+ * getChildren, setChildren, changeChildren, getNode, setNode and changeNode are lifted Tree members
+   e.g. getChildren = arrL T.getChildren
+   NB so how ArrowTree actually processes trees depends on the implementation of Tree
+ 
+ * arrows for traversing tree with different strategies: processChildren, processTopDown, deep, multi, 
+   etc.
+   E.g. add 1 to all children of root with explicit traversal 
+   
+       addOne :: [ NTree Int ] -> [ NTree Int ]
+       addOne [] = []
+       addOne (( NTree i ys ): xs) = ( NTree (i +1) ( addOne ys )) : addOne xs
+
+       testAddOne = runLA ( changeChildren ( addOne )) intTree
+    
+    can be rewritten using processChildren:
+    
+       addOneA :: LA ( NTree Int ) ( NTree Int )
+       addOneA = changeNode (+1) >>> processChildren addOneA
+
+       testAddOneA = runLA ( processChildren addOneA ) intTree
+     
+    or even better with processBottomUp:
+    
+        addOneA = processBottomUp ( changeNode (+1))

@@ -1,0 +1,9 @@
+<!-- Adapted from: http://www.yesodweb.com/book/xml
+    with the following additions:
+    * id attributes: to test preservation of unknown attributes
+    * image text: to test ignoring of image children
+ -->
+<document titlez="My Title">
+    <para id="p1">This is a paragraph. It has <em>emphasized</em> and <strong>strong</strong> words.</para>
+    <image id="i1" href="myimage.png">this should be ingored!</image>
+</document>
