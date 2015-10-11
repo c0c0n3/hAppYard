@@ -55,14 +55,18 @@ The scripts either *copy* or *sync* data to my Google drives:
 
 1. *copy* my local data to Google Drive. 
    Doesn’t transfer unchanged files. Doesn’t delete files from Drive.
-   Use the `rcopy*` scripts to do a *copy*; the corresponding `show-rcopy*`
+   Use the `rcopy-to` script to do a *copy*; the corresponding `show-rcopy-to`
    script will do a *copy* dry run.
 2. *sync* local to Drive, changing Drive data only. 
    Doesn’t transfer unchanged files. Drive data is updated to match local, 
-   including deleting files if necessary. Use the `rsync*` scripts to do a
-   *sync*; the corresponding `show-rsync*` script will do a *sync* dry run.
+   including deleting files if necessary. Use the `rsync-to` script to do a
+   *sync*; the corresponding `show-rsync-to` script will do a *sync* dry run.
    **Warning**. Since a *sync* can cause data loss, test first with the
-   `show-rsync*` script.
+   `show-rsync-to` script.
+
+All the above scripts take a mandatory configuration name argument (either `gd1`
+or `gd2`) followed by optional Rclone additional options (e.g. `--checksum` as
+explained below).
 
 Normally Rclone will look at modification time and size of files to  see if they
 are equal. If you pass the `--checksum` option to the scripts, then Rclone checks 
