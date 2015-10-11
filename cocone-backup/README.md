@@ -10,7 +10,9 @@ wrap calls to `rclone` to transfer data to my two Google drives:
 
 The idea is to back up `kb` to `gd2` and everything else to `gd1`. The scripts
 take a mandatory first argument to specify what is the Drive to transfer data
-to: either `gd1` or `gd2`.
+to: either `gd1` or `gd2`. The config file `gd1.local-dirs.txt` lists which
+local directories need to be transferred to `gd1`; likewise `gd2.local-dirs.txt`
+specifies the directories to send to `gd2`.
 
 
 Deployment
