@@ -33,7 +33,7 @@ RCLONE_CMD="$2"
 RCLONE_OPTS="${@:3}"
 
 # remote and local root paths
-REMOTE_PATH="gd:cocone/data"
+REMOTE_ROOT="gd:cocone/data"
 SYNC_DIR="$(cd "$(dirname "$0")/.." && pwd)"
 
 # config files
@@ -60,10 +60,22 @@ LOG_FILE="${LOG_FILE}.log"
 #
 function runCmd {
     localDir=$1
+    remoteDir=${REMOTE_ROOT}/$(basename "${localDir}")
 
+    # make sure the dir is in drive, e.g. if localDir=/Volumes/data/kb then we
+    # wanna create kb under gd:conone/data/ if not there already.
+    # NOTES
+    # 1. rclone mkdir does nothing if the remote dir already exists.
+    # 2. we need to run this command even if we have a --dry-run option as
+    #    the dry run would not be meaningful if the remote dir is not there.
+    rclone --config="${CONFIG_FILE}"            \
+           --log-file="${LOG_FILE}" --verbose   \
+           mkdir "${remoteDir}"
+
+    # recursively transfer data from ${localDir} to ${remoteDir}
     rclone --config="${CONFIG_FILE}" --exclude-from="${EXCLUDE_FILE}" \
            --log-file="${LOG_FILE}" --stats=30s --verbose             \
-           ${RCLONE_OPTS} ${RCLONE_CMD} "${localDir}" "${REMOTE_PATH}"
+           ${RCLONE_OPTS} ${RCLONE_CMD} "${localDir}" "${remoteDir}"
 }
 
 function removePreviousLogFile {
