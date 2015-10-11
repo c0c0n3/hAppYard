@@ -8,8 +8,9 @@ wrap calls to `rclone` to transfer data to my two Google drives:
 1. *andrea.falconi* (referring to this as `gd1`)
 2. *andrea.falconi.cell*: (referring to this as `gd2`)
 
-The idea is to back up `kb` to `gd2` and everything else to `gd1`. The `*gd1.sh`
-scripts transfer data to `gd1`, whereas the `*gd2.sh` ones transfer to `gd2`.
+The idea is to back up `kb` to `gd2` and everything else to `gd1`. The scripts
+take a mandatory first argument to specify what is the Drive to transfer data
+to: either `gd1` or `gd2`.
 
 
 Deployment
