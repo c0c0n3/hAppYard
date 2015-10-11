@@ -1,0 +1,10 @@
+# Absolute paths of local directories to back up.
+# One directory per line, first character must be a '/'.
+# Any line not beginning with a '/' will be ignored.
+
+#/Volumes/data/odds-n-ends
+#/Volumes/data/playground
+#/Volumes/data/projects
+
+/Volumes/data/_sync_/test/d1
+/Volumes/data/_sync_/test/d2
