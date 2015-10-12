@@ -10,10 +10,13 @@
 #     data-to gd1 copy
 #     data-to gd1 sync --dry-run
 #
-# Rclone output goes to 'log/name.cmd.opts.log' except for the progress updates
-# that will still be printed to stdout; here 'name' is the config name argument
-# (i.e. 'gd1' or 'gd2'), 'cmd' is the Rclone command argument (i.e. 'copy' or
-# 'sync'), and 'opts' is any given Rclone option argument (e.g. '--dry-run').
+# Rclone output goes to 'log/name.cmd.opts.log'; (*)
+# here 'name' is the config name argument (i.e. 'gd1' or 'gd2'), 'cmd' is the
+# Rclone command argument (i.e. 'copy' or 'sync'), and 'opts' is any given
+# Rclone option argument (e.g. '--dry-run').
+#
+#     (*) except for the initial progress update message that will still be
+#         printed  to stdout; Rclone bug?
 #
 # Assumptions
 # -----------

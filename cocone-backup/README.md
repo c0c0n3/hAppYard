@@ -77,8 +77,7 @@ MD5SUM and size to determine if files are equal. (But this is slower and does no
 update `mtimes` of remote files if they are incorrect as it would normally.)
 
 Rclone output goes into the `_sync_/log` directory (log files are named after
-script names), except for the progress update messages which are printed to
-`stdout`.
+script names), including progress update messages.
 
 
 
