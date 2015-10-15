@@ -28,11 +28,11 @@ generate the configuration files, see below.
 [Download][rclone-download] the latest Rclone for OSX (AMD64), then unzip, `cd`
 into the unzipped directory, and do a manual install:
 
-    $ sudo cp rclone /usr/bin/
-    $ sudo xattr -d com.apple.quarantine /usr/bin/rclone
-    $ chmod +x /usr/bin/rclone
-    $ sudo cp rclone.1 /usr/share/man/man1/ 
-    $ sudo xattr -d com.apple.quarantine /usr/share/man/man1/rclone.1 
+    $ xattr -d com.apple.quarantine rclone rclone.1
+    $ sudo mkdir -p /usr/local/bin
+    $ sudo cp rclone /usr/local/bin
+    $ chmod +x /usr/local/bin/rclone
+    $ sudo cp rclone.1 /usr/share/man/man1/
 
 ### Generating Rclone config
 You need to generate a config file for each Drive account. Run:
