@@ -31,7 +31,7 @@ into the unzipped directory, and do a manual install:
     $ xattr -d com.apple.quarantine rclone rclone.1
     $ sudo mkdir -p /usr/local/bin
     $ sudo cp rclone /usr/local/bin
-    $ chmod +x /usr/local/bin/rclone
+    $ sudo chmod +x /usr/local/bin/rclone
     $ sudo cp rclone.1 /usr/share/man/man1/
 
 ### Generating Rclone config
@@ -54,7 +54,7 @@ to access your Drive accounts!
 
 Usage
 -----
-The scripts either *copy* or *sync* data to my Google drives:
+There are scripts to either *copy* or *sync* data to my Google drives:
 
 1. *copy* my local data to Google Drive. 
    Doesn’t transfer unchanged files. Doesn’t delete files from Drive.
@@ -79,6 +79,9 @@ update `mtimes` of remote files if they are incorrect as it would normally.)
 Rclone output goes into the `_sync_/log` directory (log files are named after
 script names), including progress update messages.
 
+Additionally, a script is provided to filter the log files so to remove lines
+that are not strictly relevant to the data transfer, reducing the amount of
+noise in Rclone output.
 
 
 [rclone]: http://rclone.org/

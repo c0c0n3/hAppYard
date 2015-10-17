@@ -1,0 +1,6 @@
+# Absolute paths of local directories to back up.
+# One directory per line, first character must be a '/'.
+# Any line not beginning with a '/' will be ignored.
+
+/Volumes/data/kb
+
