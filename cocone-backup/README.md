@@ -25,6 +25,8 @@ Additionally, if installing from scratch, you also have to install Rclone and
 generate the configuration files, see below.
 
 ### Installing Rclone
+Use your package manager if you have one or follow the manual procedure below.
+
 [Download][rclone-download] the latest Rclone for OSX (AMD64), then unzip, `cd`
 into the unzipped directory, and do a manual install:
 
