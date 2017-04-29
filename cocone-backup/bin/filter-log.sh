@@ -7,4 +7,6 @@
 
 grep -v \
      -E ':( Unchanged | Size and modification | Finished reading | Reading | Excluding )' \
-     $1
+     $1 | \
+    grep -v -E 'pacer: ' | \
+    grep -v -E '\.DS_Store'
