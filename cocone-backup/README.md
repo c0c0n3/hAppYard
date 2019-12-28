@@ -45,7 +45,7 @@ and follow the instructions as explained [here][rclone-gd-config]. Call the
 remote `gd` and log in as *andrea.falconi* when prompted. Now you should have
 a brand new Rclone config file in your home that you need to move to `_sync_`:
 
-    $ mv ~/.rclone.conf /Volumes/data/_sync_/config/gd1.conf
+    $ mv ~/.config/rclone/rclone.conf /Volumes/data/_sync_/config/gd1.conf
 
 Do the same for the other account *andrea.falconi.cell* but call the file
 `gd2.conf`.

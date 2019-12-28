@@ -4,5 +4,3 @@
 
 /Volumes/data/odds-n-ends
 /Volumes/data/playground
-/Volumes/data/projects
-
